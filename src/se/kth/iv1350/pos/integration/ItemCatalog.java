@@ -18,6 +18,7 @@ public class ItemCatalog {
         itemCatalog.put("003", new ItemDescription("Mjöd", 57, 25));
         itemCatalog.put("004", new ItemDescription("Julmust", 32, 12));
         itemCatalog.put("005", new ItemDescription("Sanbitter", 10, 12));
+        itemCatalog.put("666", new ItemDescription("ItemWhichCausesDataBaseFailure", 0, 0));
     }
 
     /**
@@ -25,7 +26,10 @@ public class ItemCatalog {
      * @param identifier    the identifier for the item, eg. barcode
      * @return
      */
-    public ItemDescription getItemDescription(String identifier){
+    public ItemDescription getItemDescription(String identifier) throws ItemNotFoundException{
+        if(!itemCatalog.containsKey(identifier)) {
+            throw new ItemNotFoundException(identifier);
+        }
         itemDescription = itemCatalog.get(identifier);
         return itemDescription;
     }

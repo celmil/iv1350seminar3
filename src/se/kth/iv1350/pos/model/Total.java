@@ -3,6 +3,9 @@ package se.kth.iv1350.pos.model;
 
 import se.kth.iv1350.pos.integration.ItemDescription;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A class total which provides the purchases total price and total tax
  */
@@ -10,6 +13,7 @@ public class Total {
     private int totalPrice;
     private double totalTax;
     private int PERCENTAGE_CALCULATOR = 100;
+
 
     /**
      * adds an item's price and tax to the totalprice and totaltax
@@ -20,6 +24,7 @@ public class Total {
         double taxOfItem = (double) itemDescription.getPrice() * ((itemDescription.getTax()/PERCENTAGE_CALCULATOR));
         totalTax = totalTax + taxOfItem;
     }
+
 
     /**
      * a get function for the total price of the purchase

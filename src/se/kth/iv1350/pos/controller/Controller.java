@@ -4,27 +4,29 @@ import se.kth.iv1350.pos.integration.*;
 import se.kth.iv1350.pos.model.CashRegister;
 import se.kth.iv1350.pos.model.Reciept;
 import se.kth.iv1350.pos.model.SaleInformation;
+import se.kth.iv1350.pos.model.TotalObserver;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The controller communicates with the components in the different layers.
  */
 public class Controller {
     private ItemCatalog itemCatalog;
-    private DiscountCatalog discountCatalog;
     private SaleInformation saleInformation;
     private AccountingSystem accountingSystem;
     private InventorySystem inventorySystem;
+    private List<TotalObserver> totalObservers = new ArrayList<>();
 
     /**
      * Creator for the Controller
      * @param itemCatalog       the itemCatalog "database"
-     * @param discountCatalog   the discountCatalog "database"
      * @param accountingSystem  the representation of an accounting system
      * @param inventorySystem   the representation of an inventory system
      */
-    public Controller(ItemCatalog itemCatalog, DiscountCatalog discountCatalog, AccountingSystem accountingSystem, InventorySystem inventorySystem){
+    public Controller(ItemCatalog itemCatalog, AccountingSystem accountingSystem, InventorySystem inventorySystem){
         this.itemCatalog = itemCatalog;
-        this.discountCatalog = discountCatalog;
         this.accountingSystem = accountingSystem;
         this.inventorySystem = inventorySystem;
 
@@ -43,12 +45,20 @@ public class Controller {
      * @param itemIdentifier    the item identifier, eg. a barcode
      * @return                  a String to be displayed through the view
      */
-    public String registerItem(String itemIdentifier){
+    public String registerItem(String itemIdentifier) throws ItemNotFoundException, OperationFailedException{
         String informationToDisplay = "";
-        informationToDisplay.concat(" " + itemCatalog.getItemDescription(itemIdentifier));
+        try {
+            if (itemIdentifier.equals("666")){
+                throw new ItemCatalogException("Database failure");
+            }
+            informationToDisplay.concat(" " + itemCatalog.getItemDescription(itemIdentifier));
+        } catch (ItemCatalogException itemCatalogExc) {
+            throw new OperationFailedException("Could not access item from database. ", itemCatalogExc);
+        }
         informationToDisplay.concat(" Total:" + saleInformation.getTotal().getTotalPrice());
         Item item = new Item(itemIdentifier, itemCatalog.getItemDescription(itemIdentifier));
         saleInformation.updateSaleInformation(item);
+
         return informationToDisplay;
     }
 
@@ -74,9 +84,12 @@ public class Controller {
         Printer printer = new Printer();
         printer.printReciept(reciept);
         CashRegister cashRegister = new CashRegister();
+        saleInformation.addTotalObservers(totalObservers);
         cashRegister.updateBalance(saleInformation.getTotal());
-
         return Integer.toString(saleInformation.calculateChange(amountPaid));
+    }
+    public void addTotalObserver(TotalObserver obs){
+        totalObservers.add(obs);
     }
 
 

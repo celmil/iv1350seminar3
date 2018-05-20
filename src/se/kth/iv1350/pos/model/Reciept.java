@@ -12,7 +12,7 @@ public class Reciept {
      */
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Reciept Mysstembolaget \n");
+        builder.append("Reciept Mystembolaget \n");
         builder.append(saleInformation.toString());
         builder.append("Cashier: Celine. Have a nice day :)");
         return builder.toString();

@@ -4,13 +4,15 @@ import se.kth.iv1350.pos.integration.Item;
 
 import java.util.ArrayList;
 
+import java.util.ArrayList;
+import java.util.List;
 /**
  * A saleinformation class, represents the items in the current sale as an array list
  */
 public class SaleInformation {
     private ArrayList items = new ArrayList();
     private Total total = new Total();
-
+    private List<TotalObserver> totalObservers = new ArrayList<>();
     /**
      * Initializes a saleInfromation object
      */
@@ -24,6 +26,8 @@ public class SaleInformation {
      * @return              the change to be handed out
      */
     public int calculateChange(int amountPaid) {
+
+        notifyObservers(total.getTotalPrice());
         return total.calculateChange(amountPaid);
     }
 
@@ -42,6 +46,17 @@ public class SaleInformation {
      */
     public Total getTotal() {
         return total;
+    }
+
+
+    private void notifyObservers(int total){
+        for (TotalObserver obs : totalObservers) {
+            obs.newTotal(total);
+        }
+    }
+
+    public void addTotalObservers(List<TotalObserver> observers) {
+        totalObservers.addAll(observers);
     }
 
     /**
